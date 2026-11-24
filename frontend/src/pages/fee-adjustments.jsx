@@ -12,6 +12,7 @@ import { validateStellarAmount } from "../utils/stellarAmount";
 import { IconAlertTriangle, IconCheck } from "../components/Icons";
 import PageHero from "../components/PageHero";
 import { useAdminAuthContext } from "../hooks/AdminAuthContext";
+import EmptyState from "../components/EmptyState";
 
 const RULE_TYPES = [
   { value: "discount_percentage", labelKey: "feeAdjustments.ruleTypeDiscountPct" },
@@ -279,7 +280,7 @@ export default function FeeAdjustments() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form id="fee-adjustment-form" onSubmit={handleSubmit}>
               <div className="fa-form-grid">
                 <div className="form-group">
                   <label className="form-label">{t("feeAdjustments.nameLabel")}</label>
@@ -471,11 +472,14 @@ export default function FeeAdjustments() {
                 </tbody>
               </table>
             </div>
-          ) : rules.length === 0 ? (
-            <div style={{ padding: "3rem", textAlign: "center", color: "var(--text-muted)" }}>
-              <p style={{ fontWeight: 500, marginBottom: "0.25rem" }}>{t("feeAdjustments.emptyTitle")}</p>
-              <p style={{ fontSize: "0.8125rem" }}>{t("feeAdjustments.emptyHint")}</p>
-            </div>
+          ) : error ? null : rules.length === 0 ? (
+            <EmptyState
+              variant="fees"
+              title={t("feeAdjustments.emptyTitle")}
+              description={t("feeAdjustments.emptyHint")}
+              actionLabel={t("feeAdjustments.newTitle")}
+              actionHref="#fee-adjustment-form"
+            />
           ) : (
             <div style={{ overflowX: "auto" }}>
               <table className="data-table">

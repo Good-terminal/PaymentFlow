@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import PageHero from "../components/PageHero";
 import RequireAdmin from "../components/RequireAdmin";
-import { IconAlertTriangle, IconTrendingUp, IconUsers } from "../components/Icons";
+import { IconAlertTriangle } from "../components/Icons";
+import EmptyState from "../components/EmptyState";
 
 const API_BASE = process.env.REACT_APP_API_BASE || '/api';
 
@@ -156,7 +157,7 @@ function Analytics() {
                 </table>
               </div>
             ) : (
-              <p style={{ color: "var(--text-muted)" }}>{t("analytics.noData")}</p>
+              <EmptyState variant="payments" title={t("analytics.noData")} />
             )}
           </div>
         </div>
@@ -206,7 +207,7 @@ function Analytics() {
                 </table>
               </div>
             ) : (
-              <p style={{ color: "var(--text-muted)" }}>{t("analytics.noData")}</p>
+              <EmptyState variant="payments" title={t("analytics.noData")} />
             )}
           </div>
         </div>
@@ -239,7 +240,7 @@ function Analytics() {
                 </table>
               </div>
             ) : (
-              <p style={{ color: "var(--text-muted)" }}>{t("analytics.noUnpaid")}</p>
+              <EmptyState variant="payments" title={t("analytics.noUnpaid")} />
             )}
           </div>
         </div>

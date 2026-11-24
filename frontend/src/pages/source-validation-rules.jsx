@@ -8,6 +8,7 @@ import { getErrorMessage } from "../utils/errorMessages";
 import { IconAlertTriangle, IconCheck } from "../components/Icons";
 import PageHero from "../components/PageHero";
 import { useAdminAuthContext } from "../hooks/AdminAuthContext";
+import EmptyState from "../components/EmptyState";
 
 const EMPTY_FORM = { publicKey: "", label: "" };
 
@@ -116,7 +117,7 @@ export default function SourceValidationRules() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form id="source-rule-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="form-label">Stellar Public Key *</label>
               <input
@@ -161,11 +162,14 @@ export default function SourceValidationRules() {
 
         {loading ? (
           <div style={{ padding: "1.5rem" }}>Loading…</div>
-        ) : rules.length === 0 ? (
-          <div style={{ padding: "3rem", textAlign: "center", color: "var(--text-muted)" }}>
-            <p style={{ fontWeight: 500, marginBottom: "0.25rem" }}>No rules yet</p>
-            <p style={{ fontSize: "0.8125rem" }}>Add a trusted sender above to get started.</p>
-          </div>
+        ) : error ? null : rules.length === 0 ? (
+          <EmptyState
+            variant="fees"
+            title="No rules yet"
+            description="Add a trusted sender above to get started."
+            actionLabel="Add Rule"
+            actionHref="#source-rule-form"
+          />
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table className="data-table">

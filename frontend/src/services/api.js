@@ -78,6 +78,11 @@ export const getStudents = (page = 1, limit = 20, { search, status, className } 
   });
 export const getStudent = (studentId, { signal } = {}) => api.get(`/students/${studentId}`, { signal });
 export const registerStudent = (data) => api.post("/students", data);
+export const bulkImportStudents = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return api.post("/students/bulk", formData);
+};
 export const updateStudent = (studentId, data) => api.patch(`/students/${studentId}`, data);
 export const getPaymentSummary = () => api.get("/payments/summary");
 export const getPaymentInstructions = (studentId, { signal } = {}) => api.get(`/payments/instructions/${studentId}`, { signal });

@@ -9,12 +9,13 @@ import RequireAdmin from "../components/RequireAdmin";
 import BlockchainStatusBadge from "../components/BlockchainStatusBadge";
 import { TableDensityControl, useTableDensity } from "../components/TableDensityControl";
 import { usePaymentEvents } from "../hooks/usePaymentEvents";
-import { getSyncStatus, getPaymentSummary, getStudents, getStudent, getSchool } from "../services/api";
+import { getSyncStatus, getPaymentSummary, getStudents, getStudent, getSchool, bulkImportStudents } from "../services/api";
 import {
   IconUsers, IconCheck, IconAlertTriangle, IconDollarSign,
   IconSearch, IconChevronLeft, IconChevronRight,
 } from "../components/Icons";
 import { DEFAULT_CLASS_OPTIONS, loadSchoolClassOptions } from "../utils/classOptions";
+import EmptyState from "../components/EmptyState";
 
 const PAGE_SIZE = 20;
 
@@ -54,6 +55,9 @@ function Dashboard() {
   const [error, setError]                     = useState(null);
   const [editingStudent, setEditingStudent]   = useState(null);
   const [editingStudentData, setEditingStudentData] = useState(null);
+  const [importingStudents, setImportingStudents] = useState(false);
+  const [importMessage, setImportMessage] = useState(null);
+  const importInputRef = useRef(null);
 
   // Table density (compact / default / comfortable) — Issue #113
   const { density, setDensity } = useTableDensity();
@@ -174,6 +178,32 @@ function Dashboard() {
   function handleSaveStudent() {
     handleCloseForm();
     fetchStudents(page, debouncedSearch, statusFilter, classFilter);
+  }
+
+  async function handleStudentImport(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImportMessage(null);
+    setImportingStudents(true);
+    try {
+      const { data } = await bulkImportStudents(file);
+      setImportMessage({
+        type: data.failed ? "warning" : "success",
+        text: t("dashboard.importResults", { created: data.created, failed: data.failed }),
+      });
+      fetchSummary();
+      setPage(1);
+      fetchStudents(1, debouncedSearch, statusFilter, classFilter);
+    } catch (err) {
+      setImportMessage({
+        type: "error",
+        text: err.response?.data?.error || t("dashboard.importFailed"),
+      });
+    } finally {
+      setImportingStudents(false);
+      event.target.value = "";
+    }
   }
 
   // Toggle expanded detail row for a student — Issue #113
@@ -486,6 +516,23 @@ function Dashboard() {
               <TableDensityControl density={density} setDensity={setDensity} />
             </div>
           </div>
+          {importMessage && (
+            <div
+              className={`alert alert-${importMessage.type === "success" ? "success" : importMessage.type === "warning" ? "warning" : "danger"}`}
+              role={importMessage.type === "error" ? "alert" : "status"}
+              style={{ margin: "1rem 1.25rem 0" }}
+            >
+              {importMessage.text}
+            </div>
+          )}
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            onChange={handleStudentImport}
+            aria-label={t("dashboard.importStudents")}
+            style={{ display: "none" }}
+          />
 
           {/* Table */}
           <ErrorBoundary>
@@ -502,7 +549,7 @@ function Dashboard() {
                   </button>
                 </div>
               </div>
-            ) : (
+            ) : studentsLoading || students.length > 0 ? (
               <div style={{ overflowX: "auto" }} aria-busy={studentsLoading} aria-label={t("dashboard.studentTableAria")}>
                 <table
                   className="data-table"
@@ -531,18 +578,6 @@ function Dashboard() {
                           <td><div className="skel-block" style={{ height: 28, width: 42, borderRadius: 6 }} /></td>
                         </tr>
                       ))
-                    ) : students.length === 0 ? (
-                      <tr>
-                        <td colSpan="6">
-                          <div className="empty-state">
-                            <div className="empty-state-icon"><IconSearch size={26} /></div>
-                            <div className="empty-state-title">{t("dashboard.emptyTitle")}</div>
-                            <div className="empty-state-desc">
-                              {search || statusFilter !== "all" || classFilter ? t("dashboard.emptyFilters") : t("dashboard.emptyNone")}
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
                     ) : students.map(s => {
                       const st = (s.status || "unpaid").toLowerCase();
                       const badge = STATUS_BADGE[st] || STATUS_BADGE.unpaid;
@@ -625,6 +660,21 @@ function Dashboard() {
                   </tbody>
                 </table>
               </div>
+            ) : (
+              <EmptyState
+                variant="students"
+                title={search || statusFilter !== "all" || classFilter
+                  ? t("dashboard.emptyTitle")
+                  : t("dashboard.noStudentsYet")}
+                description={search || statusFilter !== "all" || classFilter
+                  ? t("dashboard.emptyFilters")
+                  : t("dashboard.importDescription")}
+                actionLabel={search || statusFilter !== "all" || classFilter
+                  ? undefined
+                  : importingStudents ? t("dashboard.importingStudents") : t("dashboard.importStudents")}
+                onAction={() => importInputRef.current?.click()}
+                actionDisabled={importingStudents}
+              />
             )}
           </ErrorBoundary>
 

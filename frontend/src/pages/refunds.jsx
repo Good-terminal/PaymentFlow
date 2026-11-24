@@ -5,6 +5,7 @@ import { IconAlertTriangle, IconCheck, IconChevronLeft, IconChevronRight } from 
 import PageHero from "../components/PageHero";
 import RequireAdmin from "../components/RequireAdmin";
 import { useTranslation } from "react-i18next";
+import EmptyState from "../components/EmptyState";
 
 const STATUS_META = {
   approval_pending: { cls: "badge-warning",  labelKey: "status.refund.approval_pending", color: "var(--warning)" },
@@ -378,10 +379,11 @@ function Refunds() {
         </div>
       )}
 
-      {!loading && refunds.length === 0 && (
-        <div style={{ textAlign: "center", padding: "2rem", color: "var(--text-muted)" }}>
-          {t("refunds.emptyStatus")}
-        </div>
+      {!loading && !error && refunds.length === 0 && (
+        <EmptyState
+          variant="payments"
+          title={t("refunds.emptyStatus")}
+        />
       )}
 
       {!loading && refunds.length > 0 && (

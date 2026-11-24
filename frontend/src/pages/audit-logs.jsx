@@ -7,6 +7,7 @@ import {
 import PageHero from "../components/PageHero";
 import RequireAdmin from "../components/RequireAdmin";
 import { useTranslation } from "react-i18next";
+import EmptyState from "../components/EmptyState";
 
 function formatTimestamp(isoString, t) {
   if (!isoString) return t("auditLogs.notAvailable");
@@ -151,11 +152,6 @@ function AuditLogsContent() {
         .al-filter-input:focus {
           border-color: var(--accent);
           box-shadow: 0 0 0 3px var(--accent-subtle);
-        }
-        .al-empty {
-          padding: 3.5rem;
-          text-align: center;
-          color: var(--text-muted);
         }
         .al-detail-pre {
           margin-top: 0.75rem;
@@ -335,11 +331,12 @@ function AuditLogsContent() {
                 </tbody>
               </table>
             </div>
-          ) : logs.length === 0 ? (
-            <div className="al-empty">
-              <p style={{ fontWeight: 500, marginBottom: "0.25rem" }}>{t("auditLogs.noLogsFound")}</p>
-              <p style={{ fontSize: "0.8125rem" }}>{t("auditLogs.emptyFilters")}</p>
-            </div>
+          ) : error ? null : logs.length === 0 ? (
+            <EmptyState
+              variant="reports"
+              title={t("auditLogs.noLogsFound")}
+              description={t("auditLogs.emptyFilters")}
+            />
           ) : (
             <div style={{ overflowX: "auto" }}>
               <table className="data-table">

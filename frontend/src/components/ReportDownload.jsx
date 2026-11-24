@@ -7,6 +7,7 @@ import {
 } from "./Icons";
 import PageHero, { StatCard } from "./PageHero";
 import { useTranslation } from "react-i18next";
+import EmptyState from "./EmptyState";
 
 export default function ReportDownload() {
   const { t } = useTranslation();
@@ -21,9 +22,10 @@ export default function ReportDownload() {
   const [csvLoading, setCsvLoading] = useState(false);
   const [reportHistory, setReportHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
 
   useEffect(() => {
-    loadReportHistory();
+    loadReportHistory().finally(() => setHistoryLoaded(true));
   }, []);
 
   async function loadReportHistory() {
@@ -53,7 +55,7 @@ export default function ReportDownload() {
   }
 
   async function handleGenerate(e) {
-    e.preventDefault();
+    e?.preventDefault();
     setError(""); setReport(null); setLoading(true);
     try {
       const params = {};
@@ -129,7 +131,7 @@ export default function ReportDownload() {
       />
 
       {/* Filter form */}
-      <div className="card" style={{ marginBottom: "1.5rem" }}>
+      <div className="card" id="report-filters" style={{ marginBottom: "1.5rem" }}>
         <div className="card-header">
           <div className="card-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <IconCalendar size={16} /> {t("reports.filtersTitle")}
@@ -219,6 +221,73 @@ export default function ReportDownload() {
         </div>
       )}
 
+      {!report && !error && historyLoaded && reportHistory.length === 0 && (
+        <div className="card">
+          <EmptyState
+            variant="reports"
+            title={t("reports.emptyTitle")}
+            description={t("reports.emptyDescription")}
+            actionLabel={loading ? t("reports.generating") : t("reports.generateReport")}
+            onAction={() => handleGenerate()}
+            actionDisabled={loading}
+          />
+        </div>
+      )}
+
+      {reportHistory.length > 0 && (showHistory || !report) && (
+        <div className="card" style={{ marginBottom: "1.5rem" }}>
+          <div className="card-header">
+            <div className="card-title">{t("reports.historyTitle")}</div>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table className="data-table" style={{ fontSize: "0.875rem" }}>
+              <thead>
+                <tr>
+                  <th>{t("reports.colGenerated")}</th>
+                  <th>{t("reports.colTotal")}</th>
+                  <th>{t("reports.colPayments")}</th>
+                  <th>{t("reports.colFilters")}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportHistory.map(entry => (
+                  <tr key={entry.id}>
+                    <td style={{ whiteSpace: "nowrap" }}>
+                      {new Date(entry.timestamp).toLocaleString()}
+                    </td>
+                    <td>{entry.summary.totalAmount} XLM</td>
+                    <td>{entry.summary.paymentCount}</td>
+                    <td style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                      {Object.keys(entry.params).length > 0
+                        ? Object.entries(entry.params)
+                          .map(([k, v]) => `${k}: ${v}`)
+                          .join(", ")
+                        : t("reports.none")}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => {
+                          setStartDate(entry.params.startDate || "");
+                          setEndDate(entry.params.endDate || "");
+                          setClassName(entry.params.className || "");
+                          setStudentId(entry.params.studentId || "");
+                          setPaymentStatus(entry.params.paymentStatus || "");
+                        }}
+                        className="btn btn-ghost btn-sm"
+                        style={{ padding: "0.25rem 0.5rem" }}
+                      >
+                        {t("reports.rerun")}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {report && (
         <>
           {/* Period info */}
@@ -272,60 +341,6 @@ export default function ReportDownload() {
               )}
             </div>
           </div>
-
-          {showHistory && reportHistory.length > 0 && (
-            <div className="card" style={{ marginBottom: "1.5rem" }}>
-              <div className="card-header">
-                <div className="card-title">{t("reports.historyTitle")}</div>
-              </div>
-              <div style={{ overflowX: "auto" }}>
-                <table className="data-table" style={{ fontSize: "0.875rem" }}>
-                  <thead>
-                    <tr>
-                      <th>{t("reports.colGenerated")}</th>
-                      <th>{t("reports.colTotal")}</th>
-                      <th>{t("reports.colPayments")}</th>
-                      <th>{t("reports.colFilters")}</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reportHistory.map(entry => (
-                      <tr key={entry.id}>
-                        <td style={{ whiteSpace: "nowrap" }}>
-                          {new Date(entry.timestamp).toLocaleString()}
-                        </td>
-                        <td>{entry.summary.totalAmount} XLM</td>
-                        <td>{entry.summary.paymentCount}</td>
-                        <td style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                          {Object.keys(entry.params).length > 0
-                            ? Object.entries(entry.params)
-                              .map(([k, v]) => `${k}: ${v}`)
-                              .join(", ")
-                            : t("reports.none")}
-                        </td>
-                        <td>
-                          <button
-                            onClick={() => {
-                              setStartDate(entry.params.startDate || "");
-                              setEndDate(entry.params.endDate || "");
-                              setClassName(entry.params.className || "");
-                              setStudentId(entry.params.studentId || "");
-                              setPaymentStatus(entry.params.paymentStatus || "");
-                            }}
-                            className="btn btn-ghost btn-sm"
-                            style={{ padding: "0.25rem 0.5rem" }}
-                          >
-                            {t("reports.rerun")}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
 
           <style>{`
             @keyframes spin {
@@ -415,9 +430,10 @@ export default function ReportDownload() {
               </div>
             </div>
           ) : (
-            <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>
-              <p style={{ fontWeight: 500 }}>{t("reports.noPaymentsInPeriod")}</p>
-            </div>
+            <EmptyState
+              variant="payments"
+              title={t("reports.noPaymentsInPeriod")}
+            />
           )}
         </>
       )}

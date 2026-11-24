@@ -11,6 +11,7 @@ import { getErrorMessage } from "../utils/errorMessages";
 import { DEFAULT_CLASS_OPTIONS, loadSchoolClassOptions } from "../utils/classOptions";
 import { IconAlertTriangle, IconCheck, IconDollarSign } from "../components/Icons";
 import PageHero from "../components/PageHero";
+import EmptyState from "../components/EmptyState";
 
 const EMPTY_FORM = {
   className: "",
@@ -216,7 +217,7 @@ export default function FeesPage() {
       <div className="page-wrap">
 
         {/* ── Create form ──────────────────────────────────────────────────── */}
-        <div className="card" style={{ marginBottom: "1.5rem" }}>
+        <div className="card" id="create-fee" style={{ marginBottom: "1.5rem" }}>
           <div className="card-header">
             <div
               className="card-title"
@@ -388,12 +389,14 @@ export default function FeesPage() {
                 {t("fees.loading")}
               </p>
             </div>
-          ) : fees.length === 0 ? (
-            <div className="card-body">
-              <p style={{ color: "var(--text-muted)" }}>
-                {t("fees.empty")}
-              </p>
-            </div>
+          ) : error ? null : fees.length === 0 ? (
+            <EmptyState
+              variant="fees"
+              title={t("fees.emptyTitle")}
+              description={t("fees.emptyDescription")}
+              actionLabel={t("fees.create")}
+              actionHref="#create-fee"
+            />
           ) : (
             <div style={{ overflowX: "auto" }}>
               <table

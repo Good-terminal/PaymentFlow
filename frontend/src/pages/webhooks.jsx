@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import RequireAdmin from "../components/RequireAdmin";
 import PageHero from "../components/PageHero";
-import { IconAlertTriangle, IconCheck, IconX, IconPlus, IconRefresh } from "../components/Icons";
+import { IconAlertTriangle, IconCheck, IconX, IconPlus, IconRefreshCw } from "../components/Icons";
 import { useTranslation } from "react-i18next";
+import EmptyState from "../components/EmptyState";
 
 async function apiCall(method, path, body = null) {
   const opts = { method, headers: { 'Content-Type': 'application/json' } };
@@ -183,8 +184,14 @@ function WebhooksPage() {
           <div className="card-body">
             {loading ? (
               <div className="text-center p-4">{t("webhooks.loading")}</div>
-            ) : endpoints.length === 0 ? (
-              <div className="text-center p-4">{t("webhooks.empty")}</div>
+            ) : error ? null : endpoints.length === 0 ? (
+              <EmptyState
+                variant="notifications"
+                title={t("webhooks.empty")}
+                description={t("webhooks.emptyHint")}
+                actionLabel={t("webhooks.newEndpointBtn")}
+                onAction={handleNew}
+              />
             ) : (
               <div className="table-responsive">
                 <table className="table table-sm">
@@ -222,7 +229,7 @@ function WebhooksPage() {
                               disabled={testingId === ep._id}
                               title={t("webhooks.sendTestEvent")}
                             >
-                              <IconRefresh />
+                              <IconRefreshCw />
                             </button>
                             <button
                               className="btn btn-outline-secondary"
