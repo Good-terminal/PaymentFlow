@@ -65,6 +65,22 @@ const fr = {
     back: "Retour",
   },
 
+  pagination: {
+    label: "Pagination",
+    firstPage: "Première page",
+    lastPage: "Dernière page",
+    previousPage: "Page précédente",
+    nextPage: "Page suivante",
+    firstPageAria: "Aller à la première page sur {{total}}",
+    lastPageAria: "Aller à la dernière page sur {{total}}",
+    previousPageAria: "Aller à la page précédente (page {{page}} sur {{total}})",
+    nextPageAria: "Aller à la page suivante (page {{page}} sur {{total}})",
+    pageAria: "Page {{page}} sur {{total}}",
+    ellipsis: "Plus de pages",
+    rangeOf: "{{start}}–{{end}} sur {{total}} {itemLabel}",
+    shortcutHint: "Appuyez sur g suivi d'un numéro pour aller à cette page",
+  },
+
   time: {
     never: "Jamais",
     justNow: "À l'instant",
@@ -277,6 +293,7 @@ const fr = {
     verifying: "Vérification…",
     submit: "Vérifier la transaction",
     verificationFailed: "Échec de la vérification. Vérifiez le hash de transaction et réessayez.",
+    alreadyCreated: "Ce paiement a déjà été créé. Aucun doublon n'a été enregistré.",
     checkNetworkStatus: "Vérifier le statut du réseau Stellar ↗",
     transactionFound: "Transaction trouvée",
     amount: "Montant",
@@ -751,6 +768,12 @@ const fr = {
     failed: "Mises à jour en direct indisponibles — actualisez la page pour restaurer les données en temps réel.",
     reconnecting: "Reconnexion aux mises à jour en direct…",
     degraded: "Mises à jour en temps réel dégradées — certains événements peuvent ne pas s'afficher tant que la connexion n'est pas rétablie.",
+    verifyManually: "Vérifier manuellement",
+  },
+
+  offlineBanner: {
+    message: "Vous êtes hors ligne.",
+    submsg: "Les actions de paiement sont désactivées. Les données seront actualisées automatiquement lorsque vous vous reconnecterez.",
   },
 
   errorBoundary: {
@@ -759,6 +782,8 @@ const fr = {
     reload: "Recharger la page",
     goBack: "Retour",
     goHome: "Accueil",
+    retry: "Réessayer",
+    correlationId: "Référence : {{id}}",
   },
 
   paymentPlan: {
@@ -813,52 +838,25 @@ const fr = {
     parentEmailInvalid: "Entrez une adresse e-mail valide",
   },
 
-  blockchain: {
-    statusSubmitted: "Confirmation en cours",
-    statusSubmittedSub: "En attente de la finalité blockchain",
-    statusPending: "En attente de soumission",
-    statusSuccess: "Confirmé",
-    statusSuccessSub: "Finalisé sur Stellar",
-    statusFailed: "Échoué",
-    statusFailedSub: "Transaction rejetée",
-    statusDisputed: "Contesté",
-    statusRefunded: "Remboursé",
-    statusInvalid: "Invalide",
-    viewOnExplorer: "Voir sur Stellar Explorer",
-    explorerAriaLabel: "Voir la transaction {{hash}} sur Stellar Explorer (s'ouvre dans un nouvel onglet)",
-  },
-
-  exportJob: {
-    queued: "Export en file d'attente — préparation du rapport…",
-    running: "Génération du rapport… {{progress}}%",
-    runningSubtext: "Vous pouvez naviguer et revenir télécharger quand c'est prêt.",
-    completed: "Rapport prêt à télécharger",
-    completedExpiry: "Disponible jusqu'à {{time}}",
-    download: "Télécharger",
-    failed: "Échec de l'export",
-    retry: "Réessayer",
-    expired: "Le lien de téléchargement a expiré.",
-    expiredAction: "Générez un nouveau rapport pour télécharger.",
-    generateNew: "Générer un nouveau rapport",
-    dismiss: "Fermer",
-  },
-
-  dateRange: {
-    timezone: "Fuseau horaire",
-    timezoneIndicator: "Heures affichées en {{tz}}",
-    presetToday: "Aujourd'hui",
-    presetYesterday: "Hier",
-    presetLast7: "7 derniers jours",
-    presetLast30: "30 derniers jours",
-    presetThisMonth: "Ce mois-ci",
-    presetLastMonth: "Le mois dernier",
-    startDate: "Date de début",
-    endDate: "Date de fin",
-    clearDates: "Effacer les dates",
-    invalidRange: "La date de fin doit être postérieure à la date de début",
-    futureDatesWarning: "Dates futures sélectionnées",
-    applyRange: "Appliquer",
-    customRange: "Plage personnalisée",
+  dateRangePicker: {
+    ariaLabel: "Sélecteur de plage de dates",
+    timezoneLabel: "Dates affichées en {{tz}}",
+    changeTimezone: "Changer de fuseau horaire",
+    hideTimezone: "Masquer le fuseau horaire",
+    timezoneSelectLabel: "Fuseau horaire personnalisé",
+    presetsLabel: "Plages de dates prédéfinies",
+    fromLabel: "Du",
+    toLabel: "Au",
+    fromAriaLabel: "Date de début",
+    toAriaLabel: "Date de fin",
+    preset: {
+      today: "Aujourd'hui",
+      yesterday: "Hier",
+      last7: "7 derniers jours",
+      thisMonth: "Ce mois-ci",
+      lastMonth: "Mois dernier",
+      custom: "Personnalisé",
+    },
   },
 };
 
